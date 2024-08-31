@@ -629,8 +629,8 @@ class AdminUser extends User {
         return this.supervisedSystem.getAllFitnessUsers();
     }
 
-    public boolean VerifyKey(SimpleStringProperty key) {
-        return key.get().equals(this.password.get());
+    public boolean verifyKey(String key) {
+        return key.equals(this.password.get());
     }
 
 }
@@ -681,5 +681,10 @@ class CaloriesCalulator {
 
     public void changeExcerciseType(ExerciseType exerciseType) {
         this.exerciseType = exerciseType;
+    }
+
+    public void reset() {
+        this.repetition.set(0);
+        this.hours.set(0);
     }
 }
