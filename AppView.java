@@ -43,11 +43,12 @@ public class AppView {
     private ObservableList<DailyLog> history;
     private Button addSleepButton;
     private Button addGeneralButton;
-    private CaloriesCalulator caloriesCalulator = new CaloriesCalulator();
+    private CaloriesCalulator caloriesCalulator;
 
-    public AppView(Systems system, Stage primaryStage, AppController controller, AdminUser admin) {
+    public AppView(Systems system, Stage primaryStage, AppController controller, AdminUser admin,
+            CaloriesCalulator caloriesCalulator) {
         this.controller = controller;
-        this.controller.setCalculator(caloriesCalulator);
+        this.caloriesCalulator = caloriesCalulator;
         this.system = system;
         this.admin = admin;
         createAndConfigurePane();
@@ -63,10 +64,8 @@ public class AppView {
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("View Fitness History");
         history = FXCollections
-                .observableArrayList(system.getCurrentUser().getFitnessHistory().sortedHistory());
+                .observableArrayList(system.getCurrentUser().getFitnessHistory().sortedHistory());// Model-View
 
-        // try {
-        // };
         table = new TableView<>();
 
         // Set up table columns
@@ -92,16 +91,16 @@ public class AppView {
         this.deleteDaily = new Button("Delete");
         deleteDaily.setOnAction(e -> {
             DailyLog selecteDailyLog = this.table.getSelectionModel().getSelectedItem();
-            controller.deleteDailyLog(selecteDailyLog);
-            history = FXCollections.observableArrayList(system.getCurrentUser().getFitnessHistory().sortedHistory());
-            table.setItems(history);
+            controller.deleteDailyLog(selecteDailyLog);// View-Controller
+            history = FXCollections.observableArrayList(system.getCurrentUser().getFitnessHistory().sortedHistory());// View-Controller
+            table.setItems(history);// Model-View
         });
         this.modifyDaily = new Button("Modify");
         modifyDaily.setOnAction(e -> {
             DailyLog selecteDailyLog = this.table.getSelectionModel().getSelectedItem();
             modifyForm(stage, selecteDailyLog);
             history = FXCollections.observableArrayList(system.getCurrentUser().getFitnessHistory().sortedHistory());
-            table.setItems(history);
+            table.setItems(history);// Model-View
         });
         VBox layout = new VBox(10);
         HBox choice = new HBox(deleteDaily, modifyDaily, closeButton);
@@ -159,11 +158,11 @@ public class AppView {
                 exerciseType = ExerciseType.PULL_UPS;
             }
             if (!number.isEmpty()) {
-                controller.addupdateDailyLog(dailyLog, exerciseType, number);
+                controller.addupdateDailyLog(dailyLog, exerciseType, number);// View-Controller
                 ;
                 history = FXCollections
                         .observableArrayList(system.getCurrentUser().getFitnessHistory().sortedHistory());
-                table.setItems(history);
+                table.setItems(history);// Model-View
                 stage.close();
             }
 
@@ -200,11 +199,11 @@ public class AppView {
         stage.initModality(Modality.APPLICATION_MODAL);
         Button logButton = new Button("Log Out");
         logButton.setOnAction(event -> {
-            s.logOut(s.getCurrentUser().username.get());
+            s.logOut(s.getCurrentUser().username.get());// Model-View
             info.setText("Enter your email and password");
             stage.close();
         });
-        Label label = new Label("Welcome, " + s.getName().getValue());
+        Label label = new Label("Welcome, " + s.getName().getValue());// Model-View
         Button addExerciseButton = new Button("Add Exercise");
         addExerciseButton.setOnAction(event -> showAddExerciseWindow(primaryStage));
         Button viewDailyLogButton = new Button("View Daily Log");
@@ -273,6 +272,7 @@ public class AppView {
         pullUp.setToggleGroup(toggleGroup);
         Button submit = new Button("Submit");
         submit.setOnAction(e -> {
+            caloriesCalulator.reset();
             ExerciseType exerciseType;
             if (pushUp.isSelected()) {
                 exerciseType = ExerciseType.PUSH_UPS;
@@ -293,10 +293,9 @@ public class AppView {
             } else {
                 exerciseType = ExerciseType.PULL_UPS;
             }
-            this.caloriesCalulator = new CaloriesCalulator();
-            this.controller.setCalculator(caloriesCalulator);
-            controller.changeCalculatorExercise(exerciseType);
-            controller.changeCalculatorWeight();
+
+            controller.changeCalculatorExercise(exerciseType);// View-Controller
+            controller.changeCalculatorWeight();// View-Controller
             calculateCaloriesWindow(primaryStage);
         });
         HBox choice1 = new HBox(pushUp, starJump, tricepDip);
@@ -324,11 +323,11 @@ public class AppView {
         Label resultHour = new Label();
         Label resultRep = new Label();
         repField.textProperty().addListener((observe, old, newText) -> {
-            controller.changeCalculatorRep(newText);
+            controller.changeCalculatorRep(newText);// View-Controller
         });
 
         hourField.textProperty().addListener((obs, old, newText) -> {
-            controller.changeCalculatorHour(newText);
+            controller.changeCalculatorHour(newText);// View-Controller
         });
         this.caloriesCalulator.getHour().addListener((obs, old, newNum) -> {
             updateIfNeeded(newNum, hourField);
@@ -365,7 +364,7 @@ public class AppView {
         listing.setItems(availableDate);
         Button addButton = new Button("Add Calories");
         addButton.setOnAction(e -> {
-            DailyLog dailyLog = listing.getSelectionModel().getSelectedItem();
+            DailyLog dailyLog = listing.getSelectionModel().getSelectedItem();// Model-View
             addGeneralWindowForm(primaryStage, dailyLog);
         });
         VBox listBox = new VBox(5, listing, addButton);
@@ -391,13 +390,13 @@ public class AppView {
         Button submit = new Button("Submit");
         submit.setOnAction(e -> {
             if (add.isSelected()) {
-                controller.addCalories(calories.getText(), daily);
+                controller.addCalories(calories.getText(), daily);// View-Controller
             } else if (burn.isSelected()) {
-                controller.addCalories(calories.getText(), daily);
+                controller.addCalories(calories.getText(), daily);// View-Controller
             }
             stage.close();
         });
-        VBox vbox = new VBox(calories, label, add, burn, submit);
+        VBox vbox = new VBox(new Label("Enter your calories you want to add/burn"), calories, label, add, burn, submit);
         Scene scence = new Scene(vbox, 300, 300);
         stage.setScene(scence);
         stage.show();
@@ -426,7 +425,7 @@ public class AppView {
                 String month = monthField.getText();
                 String year = yearField.getText();
                 String hours = hoursField.getText();
-                controller.addSleep(day, month, year, hours);
+                controller.addSleep(day, month, year, hours);// View-Controller
                 stage.close();
             } catch (Exception e) {
                 System.out.println("Error");
@@ -445,7 +444,7 @@ public class AppView {
     private void logInAccount(Stage primaryStage) {
         buttronIn.setOnAction(event -> {
             try {
-                controller.logIn(signInUser.getText(), signInPassword.getText());
+                controller.logIn(signInUser.getText(), signInPassword.getText());// View-Controller
                 info.setText("Log In SuccessFull");
                 // showMainMenu();
                 inAccount(primaryStage, system);
@@ -469,7 +468,7 @@ public class AppView {
 
     private void adminWindow(Stage primaryStage) {
         listView = new ListView<>();
-        createdAccount = FXCollections.observableArrayList(admin.getAllLoggedInAccount());
+        createdAccount = FXCollections.observableArrayList(admin.getAllLoggedInAccount());// Model-View
         listView.setItems(createdAccount);
         Stage stage = new Stage();
         stage.initOwner(primaryStage);
@@ -502,10 +501,10 @@ public class AppView {
         TextField keyField = new TextField();
         Button Submit = new Button("Remove");
         Submit.setOnAction(e -> {
-            boolean accept = admin.verifyKey(keyField.getText());
+            boolean accept = admin.verifyKey(keyField.getText());// Model-View
             if (accept) {
                 try {
-                    controller.removeAccout(idField.getText());
+                    controller.removeAccout(idField.getText());// View-Controller
                 } catch (Error except) {
                     createdAccount.setAll(admin.getAllLoggedInAccount());
                     listView.setItems(createdAccount);
@@ -567,7 +566,7 @@ public class AppView {
             }
             if (goal != null && calculate != null) {
                 try {
-                    controller.createAccount(username.getText(), password.getText(), email.getText(), weight.getText(),
+                    controller.createAccount(username.getText(), password.getText(), email.getText(), weight.getText(), // View-Controller
                             height.getText(), goal, calculate);
                     stage.close();
                 } catch (Exception e) {
@@ -630,12 +629,12 @@ public class AppView {
         Button viewButton = new Button("View Log");
         viewButton.setOnAction(e -> {
             try {
-                int day = controller.convertStringToInt(dayField.getText());
-                int month = controller.convertStringToInt(monthField.getText());
-                int year = controller.convertStringToInt(yearField.getText());
+                int day = controller.convertStringToInt(dayField.getText());// View-Controller
+                int month = controller.convertStringToInt(monthField.getText());// View-Controller
+                int year = controller.convertStringToInt(yearField.getText());// View-Controller
 
-                DailyLog dailyLog = system.getCurrentUser().getFitnessHistory().getDailyLog(day, month, year);
-                logInfoArea.setText(dailyLog.viewDailyLog(system.getCurrentUser().getCaloriesCalculation()).get());
+                DailyLog dailyLog = system.getCurrentUser().getFitnessHistory().getDailyLog(day, month, year);// Model-View
+                logInfoArea.setText(dailyLog.viewDailyLog(system.getCurrentUser().getCaloriesCalculation()).get());// Model-View
             } catch (NumberFormatException ex) {
                 logInfoArea.setText("Invalid input. Please enter valid numbers for the date.");
             } catch (Exception ex) {
@@ -695,9 +694,9 @@ public class AppView {
         Button addButton = new Button("Add Exercise");
         addButton.setOnAction(e -> {
             try {
-                int day = controller.convertStringToInt(dayField.getText());
-                int month = controller.convertStringToInt(monthField.getText());
-                int year = controller.convertStringToInt(yearField.getText());
+                int day = controller.convertStringToInt(dayField.getText());// View-Controller-View
+                int month = controller.convertStringToInt(monthField.getText());// View-Controller-View
+                int year = controller.convertStringToInt(yearField.getText());// View-Controller-View
 
                 ExerciseType exerciseType = ExerciseType.PUSH_UPS;
                 if (pushUp.isSelected()) {
@@ -721,11 +720,11 @@ public class AppView {
 
                 if (this.system.getCurrentUser().getCalculate() == CalculateExcerciseCalories.PER_EXCERCISE) {
                     SimpleIntegerProperty repetitions = new SimpleIntegerProperty(
-                            controller.convertStringToInt(repetitionsField.getText()));
-                    controller.addExercise(day, month, year, exerciseType, repetitions);
+                            controller.convertStringToInt(repetitionsField.getText()));// View-Controller
+                    controller.addExercise(day, month, year, exerciseType, repetitions);// View-Controller
                 } else {
                     SimpleDoubleProperty hour = new SimpleDoubleProperty(Double.parseDouble(hoursField.getText()));
-                    controller.addExercise(day, month, year, exerciseType, hour);
+                    controller.addExercise(day, month, year, exerciseType, hour);// View-Controller
                 }
                 stage.close();
             } catch (IllegalArgumentException ex) {
