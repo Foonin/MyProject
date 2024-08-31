@@ -1,5 +1,4 @@
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
@@ -9,34 +8,36 @@ public class AppController {
     AdminUser admin;
     CaloriesCalulator caloriesCalulator;
 
-    AppController(Systems system, AdminUser admin) {
+    AppController(Systems system, AdminUser admin, CaloriesCalulator caloriesCalulator) {
         this.system = system;
         this.admin = admin;
-    }
-
-    public void setCalculator(CaloriesCalulator calulator) {
-        this.caloriesCalulator = calulator;
+        this.caloriesCalulator = caloriesCalulator;
     }
 
     public void changeCalculatorHour(String hour) {
-        this.caloriesCalulator.changeHour(convertStringToDouble(hour));
+        this.caloriesCalulator.changeHour(convertStringToDouble(hour)); // Controller-View: calling method from
+                                                                        // calolries calculator
         ;
     }
 
     public void changeCalculatorRep(String rep) {
-        this.caloriesCalulator.changeRep(convertStringToInt(rep));
+        this.caloriesCalulator.changeRep(convertStringToInt(rep));// Controller-View: calling method from calolries
+                                                                  // calculator
     }
 
-    public void changeCalculatorExercise(ExerciseType exerciseType) {
+    public void changeCalculatorExercise(ExerciseType exerciseType) {// Controller-View: calling method from calolries
+                                                                     // calculator
         this.caloriesCalulator.changeExcerciseType(exerciseType);
     }
 
     public void changeCalculatorWeight() {
-        this.caloriesCalulator.setWeight(this.system.getCurrentUser().getWeight().doubleValue());
+        this.caloriesCalulator.setWeight(this.system.getCurrentUser().getWeight().doubleValue());// Controller-View:
+                                                                                                 // calling method from
+                                                                                                 // calolries calculator
     }
 
     public void reformatHistory() {
-        this.system.getCurrentUser().reformatHistory();
+        this.system.getCurrentUser().reformatHistory();// Controller-View: calling method from calolries calculator
     }
 
     public void addupdateDailyLog(DailyLog dailyLog, ExerciseType exercisetype, String rep) {
@@ -47,13 +48,13 @@ public class AppController {
         } else {
             int repetition = convertStringToInt(rep);
             exercise = new Exercise(new SimpleDoubleProperty(0), new SimpleIntegerProperty(repetition), exercisetype);
-        }
-        dailyLog.setFeature(exercise);
+        } // Controller: Logic
+        dailyLog.setFeature(exercise);// Controller-View: calling method from DailyLog
         reformatHistory();
     }
 
     public void deleteDailyLog(DailyLog daily) {
-        this.system.getCurrentUser().getFitnessHistory().getHistory().remove(daily);
+        this.system.getCurrentUser().getFitnessHistory().getHistory().remove(daily);// Controller-Model
         reformatHistory();
     }
 
@@ -62,15 +63,15 @@ public class AppController {
         DailyLog dailyLog = system.getCurrentUser().getFitnessHistory().getDailyLog(day, month, year);
         if (dailyLog == null) {
             dailyLog = new DailyLog(day, month, year);
-        }
+        } // Controller: Logic
 
         SimpleDoubleProperty hours = new SimpleDoubleProperty(0); // Set to 0 as we're using repetitions
         SimpleIntegerProperty count = repetitions;
         Exercise exercise = new Exercise(hours, count, exerciseType);
-        dailyLog.addFeature(exercise);
-        system.getCurrentUser().getFitnessHistory().addOrUpdateDailyLog(dailyLog);
-        system.getCurrentUser().calculateCalories(dailyLog);
-        system.getCurrentUser().calculateImprovement(dailyLog, system.getCurrentUser().getGoal());
+        dailyLog.addFeature(exercise);// Controller-Model
+        system.getCurrentUser().getFitnessHistory().addOrUpdateDailyLog(dailyLog);// Controller-Model
+        system.getCurrentUser().calculateCalories(dailyLog);// Controller-Model
+        system.getCurrentUser().calculateImprovement(dailyLog, system.getCurrentUser().getGoal());// Controller-Model
     }
 
     public void addExercise(int day, int month, int year,
@@ -83,11 +84,11 @@ public class AppController {
         Exercise exercise = new Exercise(hours, count, exerciseType);
         dailyLog.addFeature(exercise);
 
-        system.getCurrentUser().getFitnessHistory().addOrUpdateDailyLog(dailyLog);
+        system.getCurrentUser().getFitnessHistory().addOrUpdateDailyLog(dailyLog);// Controller-Model
 
-        system.getCurrentUser().calculateCalories(dailyLog);
+        system.getCurrentUser().calculateCalories(dailyLog);// Controller-Model
 
-        system.getCurrentUser().calculateImprovement(dailyLog, system.getCurrentUser().getGoal());
+        system.getCurrentUser().calculateImprovement(dailyLog, system.getCurrentUser().getGoal());// Controller-Model
 
     }
 
@@ -95,19 +96,19 @@ public class AppController {
         SimpleDoubleProperty hours = new SimpleDoubleProperty(0); // Set to 0 as we're using repetitions
         SimpleIntegerProperty count = repetitions;
         Exercise exercise = new Exercise(hours, count, exerciseType);
-        dailyLog.addFeature(exercise);
-        system.getCurrentUser().getFitnessHistory().addOrUpdateDailyLog(dailyLog);
-        system.getCurrentUser().calculateCalories(dailyLog);
-        system.getCurrentUser().calculateImprovement(dailyLog, system.getCurrentUser().getGoal());
+        dailyLog.addFeature(exercise);// Controller-Model
+        system.getCurrentUser().getFitnessHistory().addOrUpdateDailyLog(dailyLog);// Controller-Model
+        system.getCurrentUser().calculateCalories(dailyLog);// Controller-Model
+        system.getCurrentUser().calculateImprovement(dailyLog, system.getCurrentUser().getGoal());// Controller-Model
     }
 
     public void addExercise(DailyLog dailyLog, ExerciseType exerciseType, SimpleDoubleProperty hours) {
         SimpleIntegerProperty count = new SimpleIntegerProperty(0);
         Exercise exercise = new Exercise(hours, count, exerciseType);
-        dailyLog.addFeature(exercise);
-        system.getCurrentUser().getFitnessHistory().addOrUpdateDailyLog(dailyLog);
-        system.getCurrentUser().calculateCalories(dailyLog);
-        system.getCurrentUser().calculateImprovement(dailyLog, system.getCurrentUser().getGoal());
+        dailyLog.addFeature(exercise);// Controller-Model
+        system.getCurrentUser().getFitnessHistory().addOrUpdateDailyLog(dailyLog);// Controller-Model
+        system.getCurrentUser().calculateCalories(dailyLog);// Controller-Model
+        system.getCurrentUser().calculateImprovement(dailyLog, system.getCurrentUser().getGoal());// Controller-Model
     }
 
     public void createAccount(String username, String password, String email,
@@ -115,17 +116,17 @@ public class AppController {
 
         system.addAccount(username, password, email, convertStringToDouble(weight),
                 convertStringToDouble(height), goal, caloriesCalculation);
-    }
+    }// Controller-Model
 
     public void logIn(String username, String password) {
-        SimpleBooleanProperty log = new SimpleBooleanProperty(system.logIn(username, password));
+        SimpleBooleanProperty log = new SimpleBooleanProperty(system.logIn(username, password));// Controller-Model
         if (!log.getValue()) {
             throw new Error("Cant logIn");
         }
     }
 
     public void logIn(int id, String password) {
-        SimpleBooleanProperty log = new SimpleBooleanProperty(system.logIn(id, password));
+        SimpleBooleanProperty log = new SimpleBooleanProperty(system.logIn(id, password));// Controller-Model
         if (!log.getValue()) {
             throw new Error("Cant logIn");
         }
@@ -138,33 +139,28 @@ public class AppController {
             daily = new DailyLog(convertStringToInt(day), convertStringToInt(month), convertStringToInt(year));
         }
         Double hour = Double.parseDouble(hours);
-        daily.addFeature(new SimpleDoubleProperty(hour));
+        daily.addFeature(new SimpleDoubleProperty(hour));// Controller-Model
     }
 
     public void addCalories(String cal, DailyLog daily) {
-        daily.addCalories(Double.parseDouble(cal));
+        daily.addCalories(Double.parseDouble(cal));// Controller-Model
     }
 
     public void burnCalories(String cal, DailyLog daily) {
-        daily.burnCalories(Double.parseDouble(cal));
+        daily.burnCalories(Double.parseDouble(cal));// Controller-Model
     }
 
     public void addOrUpdateDailyLog(DailyLog dailyLog) {
         if (system.getCurrentUser().getFitnessHistory().getDailyLog(dailyLog).getDate().equals(dailyLog.getDate())) {
             return;
         }
-        system.getCurrentUser().getFitnessHistory().addOrUpdateDailyLog(dailyLog);
+        system.getCurrentUser().getFitnessHistory().addOrUpdateDailyLog(dailyLog);// Controller-Model
     }
 
     public void removeAccout(String idString) {
         int id = convertStringToInt(idString);
         system.removeAccount(id);
-    }
-
-    public boolean verifyKey(String key) {
-        SimpleStringProperty keyProperty = new SimpleStringProperty(key);
-        return admin.VerifyKey(keyProperty);
-    }
+    }// Controller-Model
 
     public int convertStringToInt(String s) {
         if (s == null || s.isEmpty()) {
