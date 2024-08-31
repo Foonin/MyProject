@@ -11,8 +11,9 @@ public class App extends Application {
                 80, 1.8, Goal.LOSE_WEIGHT,
                 CalculateExcerciseCalories.DURATION_OF_EXCERCISE);
         AdminUser admin = new AdminUser(system, "Admin", "abcd-1234", "1");
-        AppController controller = new AppController(system, admin);
-        AppView page = new AppView(system, primaryStage, controller, admin);
+        CaloriesCalulator calculator = new CaloriesCalulator();
+        AppController controller = new AppController(system, admin, calculator);
+        AppView page = new AppView(system, primaryStage, controller, admin, calculator);
         Scene scene = new Scene(page.asParent(), 300, 300);
         primaryStage.setScene(scene);
         primaryStage.show();
